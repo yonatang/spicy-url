@@ -59,6 +59,6 @@ public class MalformedUrlException extends RuntimeException {
 	}
 
 	static enum Errors {
-		UNKNOWN, INVALID_PORT_VALUE,HOST_IS_MISSING
+		UNKNOWN, INVALID_PORT_VALUE,HOST_IS_MISSING,SCHEME_IS_MISSING
 	}
 }

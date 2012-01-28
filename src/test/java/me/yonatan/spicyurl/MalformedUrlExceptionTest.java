@@ -4,6 +4,9 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.text.MessageFormat;
+
 import me.yonatan.spicyurl.MalformedUrlException.Errors;
 
 import org.testng.annotations.Test;
@@ -61,7 +64,7 @@ public class MalformedUrlExceptionTest {
 				"Message is correct",
 				m.getMessage(),
 				allOf(containsString("http://url.com"),
-						containsString("Port 65536 is invalid")));
+						containsString("Port "+MessageFormat.format("{0}", 65536)+" is invalid")));
 		assertThat("Cause is correct", m.getCause(), equalTo((Throwable) npe));
 	}
 

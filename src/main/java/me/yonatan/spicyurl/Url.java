@@ -15,6 +15,10 @@
  ******************************************************************************/
 package me.yonatan.spicyurl;
 
+import static me.yonatan.spicyurl.MalformedUrlException.Errors.HOST_IS_MISSING;
+import static me.yonatan.spicyurl.MalformedUrlException.Errors.INVALID_PORT_VALUE;
+import static me.yonatan.spicyurl.MalformedUrlException.Errors.SCHEME_IS_MISSING;
+
 import java.net.URI;
 import java.net.URL;
 
@@ -24,7 +28,6 @@ import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Preconditions;
-
 @Getter
 @ToString
 public class Url {
@@ -56,13 +59,13 @@ public class Url {
 
 	protected void setHost(String host) {
 		if (StringUtils.isEmpty(host))
-			throw new MalformedUrlException(getRaw());
+			throw new MalformedUrlException(getRaw(),HOST_IS_MISSING);
 		this.host = host;
 	}
 
 	protected void setScheme(String scheme) {
 		if (StringUtils.isEmpty(scheme))
-			throw new MalformedUrlException(getRaw());
+			throw new MalformedUrlException(getRaw(),SCHEME_IS_MISSING);
 		this.scheme = scheme;
 	}
 
@@ -72,7 +75,7 @@ public class Url {
 
 	protected void setPort(int port) {
 		if (port < Parser.MIN_PORT_VALUE || port > Parser.MAX_PORT_VALUE)
-			throw new MalformedUrlException(getRaw());
+			throw new MalformedUrlException(getRaw(),INVALID_PORT_VALUE,port);
 
 		this.port = port;
 	}
@@ -119,7 +122,7 @@ public class Url {
 					.splitByWholeSeparatorPreserveAllTokens(url.getRaw(),
 							SCHEME_SEP, 2);
 			if (stage0.length != 2)
-				throw new MalformedUrlException(url.getRaw());
+				throw new MalformedUrlException(url.getRaw(),HOST_IS_MISSING);
 
 			url.setScheme(stage0[0]);
 
@@ -140,7 +143,7 @@ public class Url {
 
 		private void parseLoginHostPort(String loginHostPort) {
 			if (StringUtils.isEmpty(loginHostPort))
-				throw new MalformedUrlException(url.getRaw());
+				throw new MalformedUrlException(url.getRaw(),HOST_IS_MISSING);
 			if (loginHostPort.contains(LOGIN_SEP)) {
 				parseLogin(StringUtils.substringBeforeLast(loginHostPort,
 						LOGIN_SEP));
@@ -169,7 +172,7 @@ public class Url {
 			String[] stage0 = StringUtils.splitPreserveAllTokens(hostPort,
 					PORT_SEP);
 			if (stage0.length > 2)
-				throw new MalformedUrlException(url.getRaw());
+				throw new MalformedUrlException(url.getRaw(),INVALID_PORT_VALUE,hostPort);
 			url.setHost(stage0[0]);
 			if (stage0.length == 2) {
 				parsePort(stage0[1]);
@@ -178,12 +181,12 @@ public class Url {
 
 		private void parsePort(String port) {
 			if (!StringUtils.isNumeric(port)) {
-				throw new MalformedUrlException(url.getRaw());
+				throw new MalformedUrlException(url.getRaw(),INVALID_PORT_VALUE,port);
 			}
 			try {
 				url.setPort(Integer.parseInt(port));
 			} catch (NumberFormatException e) {
-				throw new MalformedUrlException(url.getRaw());
+				throw new MalformedUrlException(url.getRaw(),INVALID_PORT_VALUE,port);
 			}
 		}
 
