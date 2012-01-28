@@ -18,9 +18,6 @@ package me.yonatan.spicyurl;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import me.yonatan.spicyurl.MalformedUrlException;
-import me.yonatan.spicyurl.Url;
-
 import org.testng.annotations.Test;
 
 //TODO - decide how to treat multiple colons in username/password part
@@ -163,6 +160,12 @@ public class UrlTest {
 				null);
 	}
 	
+	public void shouldParseEmptyPathWithQuery3() {
+		Url url = new Url("http://host.com?que/ry=2");
+		assertUrlParts(url, "http", null, null, "host.com", -1, null, "que/ry=2",
+				null);
+	}
+	
 	public void shouldParseEmptyPathWithFrag() {
 		Url url = new Url("http://host.com/#fragment");
 		assertUrlParts(url, "http", null, null, "host.com", -1, "", null,
@@ -173,5 +176,17 @@ public class UrlTest {
 		Url url = new Url("http://host.com#fragment");
 		assertUrlParts(url, "http", null, null, "host.com", -1, null, null,
 				"fragment");
+	}
+	
+	public void shouldParseEmptyPathWithFrag3() {
+		Url url = new Url("http://host.com#frag/ment");
+		assertUrlParts(url, "http", null, null, "host.com", -1, null, null,
+				"frag/ment");
+	}
+	
+	public void shouldParseEmptyPathWithFrag4() {
+		Url url = new Url("http://host.com#frag?ment");
+		assertUrlParts(url, "http", null, null, "host.com", -1, null, null,
+				"frag?ment");
 	}
 }
