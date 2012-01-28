@@ -154,16 +154,58 @@ public class UrlTest {
 				null);
 	}
 	
+	public void shouldParseEmptyPathWithQueryAndFrag() {
+		Url url = new Url("http://host.com/?query=2#fragment");
+		assertUrlParts(url, "http", null, null, "host.com", -1, "", "query=2",
+				"fragment");
+	}
+	
+	public void shouldParseEmptyPathWithQueryAndEmptyFrag() {
+		Url url = new Url("http://host.com/?query=2#");
+		assertUrlParts(url, "http", null, null, "host.com", -1, "", "query=2",
+				"");
+	}
+	
 	public void shouldParseEmptyPathWithQuery2() {
 		Url url = new Url("http://host.com?query=2");
 		assertUrlParts(url, "http", null, null, "host.com", -1, null, "query=2",
 				null);
 	}
 	
+	public void shouldParseEmptyPathWithQuery2AndFrag() {
+		Url url = new Url("http://host.com?query=2#fragment");
+		assertUrlParts(url, "http", null, null, "host.com", -1, null, "query=2",
+				"fragment");
+	}
+	
+	public void shouldParseEmptyPathWithQuery2AndEmptyFrag() {
+		Url url = new Url("http://host.com?query=2#");
+		assertUrlParts(url, "http", null, null, "host.com", -1, null, "query=2",
+				"");
+	}
+	
 	public void shouldParseEmptyPathWithQuery3() {
 		Url url = new Url("http://host.com?que/ry=2");
 		assertUrlParts(url, "http", null, null, "host.com", -1, null, "que/ry=2",
 				null);
+	}
+	
+	public void shouldParseEmptyPathWithQuery3AndFrag() {
+		Url url = new Url("http://host.com?que/ry=2#fragment");
+		assertUrlParts(url, "http", null, null, "host.com", -1, null, "que/ry=2",
+				"fragment");
+	}
+	
+	public void shouldParseEmptyPathWithQuery4AndFrag() {
+		Url url = new Url("http://host.com?query=2#fr/agment");
+		assertUrlParts(url, "http", null, null, "host.com", -1, null, "query=2",
+				"fr/agment");
+	}
+	
+	public void shouldParseEmptyPathWithQuery3AndEmptyFrag() {
+		Url url = new Url("http://host.com?que/ry=2#");
+		assertUrlParts(url, "http", null, null, "host.com", -1, null, "que/ry=2",
+				"");
 	}
 	
 	public void shouldParseEmptyPathWithFrag() {
