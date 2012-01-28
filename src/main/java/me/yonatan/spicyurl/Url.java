@@ -54,7 +54,7 @@ public class Url {
 	private String query;
 	private String fragment;
 
-	class Parser {
+	protected class Parser {
 		private final static String SCHEME_SEP = "://";
 		private final static String PATH_SEP = "/";
 		private final static String LOGIN_SEP = "@";
@@ -67,11 +67,11 @@ public class Url {
 
 		private final Url url;
 
-		Parser(Url url) {
+		protected Parser(Url url) {
 			this.url = url;
 		}
 
-		void parse() {
+		protected void parse() {
 			String[] stage0 = StringUtils
 					.splitByWholeSeparatorPreserveAllTokens(url.getRaw(),
 							SCHEME_SEP, 2);
