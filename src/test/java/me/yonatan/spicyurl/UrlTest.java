@@ -63,6 +63,46 @@ public class UrlTest {
 	public void shouldFailOnEmptyHostWithPath() {
 		new Url("http:///path");
 	}
+	
+	@Test(expectedExceptions = MalformedUrlException.class)
+	public void shouldFailOnEmptyHostWithPathAndQuery() {
+		new Url("http:///path?query");
+	}
+	
+	@Test(expectedExceptions = MalformedUrlException.class)
+	public void shouldFailOnEmptyHostWithPathAndQueryAndFrag() {
+		new Url("http:///path?query#fragment");
+	}
+	
+	@Test(expectedExceptions = MalformedUrlException.class)
+	public void shouldFailOnEmptyHostWithQuery() {
+		new Url("http://?query");
+	}
+	
+	@Test(expectedExceptions = MalformedUrlException.class)
+	public void shouldFailOnEmptyHostWithQueryAndFrag() {
+		new Url("http://?query#fragment");
+	}
+	
+	@Test(expectedExceptions = MalformedUrlException.class)
+	public void shouldFailOnEmptyHostWithFrag() {
+		new Url("http://#fragment");
+	}
+	
+	@Test(expectedExceptions = MalformedUrlException.class)
+	public void shouldFailOnEmptyHostPort() {
+		new Url("http://:90");
+	}
+	
+	@Test(expectedExceptions = MalformedUrlException.class)
+	public void shouldFailOnEmptyHostPortAndEmptyPath() {
+		new Url("http://:90/");
+	}
+	@Test(expectedExceptions = MalformedUrlException.class)
+	public void shouldFailOnEmptyHostPortAndPath() {
+		new Url("http://:90/path");
+	}
+
 
 	public void shouldCreateUrlWithPort() {
 		Url url = new Url("http://abc.com:90");
