@@ -56,14 +56,18 @@ public class Url {
 
 	protected class Parser {
 		private final static String SCHEME_SEP = "://";
-		private final static String PATH_SEP = "/";
+		private final static char QUERY_SEP_CHAR = '?';
+		private final static char FRAGMENT_SEP_CHAR = '#';
+		private final static char PATH_SEP_CHAR = '/';
 		private final static String LOGIN_SEP = "@";
 		private final static String USER_PASS_SEP = ":";
 		private final static String PORT_SEP = ":";
 		private final static int MIN_PORT_VALUE = 1;
 		private final static int MAX_PORT_VALUE = 65535;
-		private final static String QUERY_SEP = "?";
-		private final static String FRAGMENT_SEP = "?";
+
+		private final static String QUERY_SEP = "" + QUERY_SEP_CHAR;
+		private final static String PATH_SEP = "" + PATH_SEP_CHAR;
+		private final static String FRAGMENT_SEP = "" + FRAGMENT_SEP_CHAR;
 
 		private final Url url;
 
@@ -82,15 +86,19 @@ public class Url {
 			if (StringUtils.isEmpty(scheme))
 				throw new MalformedUrlException();
 
-			String[] stage1 = StringUtils
-					.splitByWholeSeparatorPreserveAllTokens(stage0[1],
-							PATH_SEP, 2);
-			if (stage1.length == 0)
-				throw new MalformedUrlException();
+			// Check for first speprator, to split host from path/query/fragment
+			int hostSeperatorIdx = StringUtils.indexOfAny(stage0[1], PATH_SEP,
+					QUERY_SEP, FRAGMENT_SEP);
+			if (hostSeperatorIdx == -1) {
+				// Just host
+				parseLoginHostPort(stage0[1]);
+			} else {
+				parseLoginHostPort(StringUtils.substring(stage0[1], 0,
+						hostSeperatorIdx));
+				parsePathQueryFregment(StringUtils.substring(stage0[1],
+						hostSeperatorIdx));
+			}
 
-			parseLoginHostPort(stage1[0]);
-			if (stage1.length == 2)
-				parsePathQueryFregment(stage1[1]);
 		}
 
 		private void parseLoginHostPort(String loginHostPort) {
@@ -145,27 +153,55 @@ public class Url {
 				throw new MalformedUrlException();
 		}
 
-		private void parsePathQueryFregment(String pathQueryFregment) {
-			// if (StringUtils.isEmpty(pathQueryFregment)) return;
-			if (pathQueryFregment == null)
+		/**
+		 * 
+		 * @param pathQueryFregment
+		 *            - first char should be the seperator (PATH '/', QUERY '?'
+		 *            or FRAGMENT '?')
+		 */
+		private void parsePathQueryFregment(String sepPathQueryFregment) {
+			if (StringUtils.isEmpty(sepPathQueryFregment))
 				return;
-			String[] stage0 = StringUtils.splitPreserveAllTokens(
-					pathQueryFregment, FRAGMENT_SEP, 2);
-			if (stage0.length == 2) {
-				url.fragment = stage0[1];
+			char firstSeperator = sepPathQueryFregment.charAt(0);
+			String pathQueryFregment = StringUtils.substring(
+					sepPathQueryFregment, 1);
+
+			switch (firstSeperator) {
+			case PATH_SEP_CHAR:
+				int secondSeperatorIdx = StringUtils.indexOfAny(
+						pathQueryFregment, QUERY_SEP, FRAGMENT_SEP);
+				if (secondSeperatorIdx == -1) {
+					url.path = pathQueryFregment;
+				} else {
+					url.path = StringUtils.substring(pathQueryFregment, 0,
+							secondSeperatorIdx);
+					parseQueryFregmant(StringUtils.substring(pathQueryFregment,
+							secondSeperatorIdx));
+				}
+				break;
+			case QUERY_SEP_CHAR:
+				parseQueryFregmant(pathQueryFregment);
+				break;
+			case FRAGMENT_SEP_CHAR:
+				url.fragment = pathQueryFregment;
+				break;
+			default:
+				throw new MalformedUrlException();
 			}
-			parsePathQuery(stage0[0]);
 		}
 
-		private void parsePathQuery(String pathQuery) {
-			// if (StringUtils.isEmpty(pathQuery)) return;
-			String[] stage0 = StringUtils.splitPreserveAllTokens(pathQuery,
-					QUERY_SEP, 2);
-			if (stage0.length == 2) {
-				url.query = stage0[1];
-			}
-			url.path = stage0[0];
+		private void parseQueryFregmant(String queryFragment) {
+			if (StringUtils.isEmpty(queryFragment))
+				return;
+
+				String[] parts = StringUtils.splitPreserveAllTokens(
+						queryFragment, FRAGMENT_SEP, 2);
+				url.query = parts[0];
+				if (parts.length == 2) {
+					url.fragment = parts[1];
+				}
 		}
+
 	}
 
 }
