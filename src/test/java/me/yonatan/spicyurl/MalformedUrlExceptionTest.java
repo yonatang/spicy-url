@@ -3,9 +3,11 @@ package me.yonatan.spicyurl;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.text.MessageFormat;
+import java.util.ResourceBundle;
 
 import me.yonatan.spicyurl.MalformedUrlException.Errors;
 
@@ -88,6 +90,13 @@ public class MalformedUrlExceptionTest {
 				allOf(containsString("http://url.com"),
 						containsString("Message!")));
 		assertThat("Cause is correct", m.getCause(), equalTo((Throwable) npe));
+	}
+	
+	public void shouldHaveResourcesForAllErrors(){
+		ResourceBundle rb=ResourceBundle.getBundle("me/yonatan/spicyurl/ErrorMessages");
+		for (Errors e:MalformedUrlException.Errors.values()){
+			assertThat("ResourceBundle contains key",rb.getString(e.name()),notNullValue());
+		}
 	}
 
 }

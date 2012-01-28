@@ -18,6 +18,11 @@ package me.yonatan.spicyurl;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 import org.testng.annotations.Test;
 
 //TODO - decide how to treat multiple colons in username/password part
@@ -53,6 +58,26 @@ public class UrlTest {
 	public void shouldFailOnEmptyHost() {
 		new Url("http://");
 	}
+	
+	@Test(expectedExceptions = MalformedUrlException.class)
+	public void shouldFailMissingSchemeSeperator() {
+		new Url("http:/host.com");
+	}
+	
+	@Test(expectedExceptions = MalformedUrlException.class)
+	public void shouldFailMissingSchemeSeperator2() {
+		new Url("http//host.com");
+	}
+	
+	@Test(expectedExceptions = MalformedUrlException.class)
+	public void shouldFailMissingSchemeSeperator3() {
+		new Url("http/host.com");
+	}
+	
+	@Test(expectedExceptions = MalformedUrlException.class)
+	public void shouldFailMissingSchemeSeperator4() {
+		new Url("httphost.com");
+	}
 
 	@Test(expectedExceptions = MalformedUrlException.class)
 	public void shouldFailOnEmptyHostWithPort() {
@@ -63,46 +88,46 @@ public class UrlTest {
 	public void shouldFailOnEmptyHostWithPath() {
 		new Url("http:///path");
 	}
-	
+
 	@Test(expectedExceptions = MalformedUrlException.class)
 	public void shouldFailOnEmptyHostWithPathAndQuery() {
 		new Url("http:///path?query");
 	}
-	
+
 	@Test(expectedExceptions = MalformedUrlException.class)
 	public void shouldFailOnEmptyHostWithPathAndQueryAndFrag() {
 		new Url("http:///path?query#fragment");
 	}
-	
+
 	@Test(expectedExceptions = MalformedUrlException.class)
 	public void shouldFailOnEmptyHostWithQuery() {
 		new Url("http://?query");
 	}
-	
+
 	@Test(expectedExceptions = MalformedUrlException.class)
 	public void shouldFailOnEmptyHostWithQueryAndFrag() {
 		new Url("http://?query#fragment");
 	}
-	
+
 	@Test(expectedExceptions = MalformedUrlException.class)
 	public void shouldFailOnEmptyHostWithFrag() {
 		new Url("http://#fragment");
 	}
-	
+
 	@Test(expectedExceptions = MalformedUrlException.class)
 	public void shouldFailOnEmptyHostPort() {
 		new Url("http://:90");
 	}
-	
+
 	@Test(expectedExceptions = MalformedUrlException.class)
 	public void shouldFailOnEmptyHostPortAndEmptyPath() {
 		new Url("http://:90/");
 	}
+
 	@Test(expectedExceptions = MalformedUrlException.class)
 	public void shouldFailOnEmptyHostPortAndPath() {
 		new Url("http://:90/path");
 	}
-
 
 	public void shouldCreateUrlWithPort() {
 		Url url = new Url("http://abc.com:90");
@@ -133,6 +158,17 @@ public class UrlTest {
 	public void shouldFailOnLargePort() {
 		new Url("http://abc.com:65536");
 	}
+	
+	@Test(expectedExceptions = MalformedUrlException.class)
+	public void shouldFailOnMultipleColonsInHost() {
+		new Url("http://abc.com:65:65536");
+	}
+	
+	@Test(expectedExceptions = MalformedUrlException.class)
+	public void shouldFailOnVeryVeryLargePort() {
+		new Url("http://abc.com:"+Long.MAX_VALUE);
+	}
+	
 
 	public void shouldParseLogin() {
 		Url url = new Url("http://user:pass@host.com");
@@ -143,6 +179,12 @@ public class UrlTest {
 	public void shouldParseLoginWithPort() {
 		Url url = new Url("http://user:pass@host.com:90");
 		assertUrlParts(url, "http", "user", "pass", "host.com", 90, null, null,
+				null);
+	}
+	
+	public void shouldParseEmptyLogin() {
+		Url url = new Url("http://@host.com");
+		assertUrlParts(url, "http", "", null, "host.com", -1, null, null,
 				null);
 	}
 
@@ -181,94 +223,117 @@ public class UrlTest {
 		assertUrlParts(url, "http", null, null, "host.com", -1, "a/b/c", null,
 				null);
 	}
-	
+
 	public void shouldParseEmptyPath() {
 		Url url = new Url("http://host.com/");
-		assertUrlParts(url, "http", null, null, "host.com", -1, "", null,
-				null);
+		assertUrlParts(url, "http", null, null, "host.com", -1, "", null, null);
 	}
-	
+
 	public void shouldParseEmptyPathWithQuery() {
 		Url url = new Url("http://host.com/?query=2");
 		assertUrlParts(url, "http", null, null, "host.com", -1, "", "query=2",
 				null);
 	}
-	
+
 	public void shouldParseEmptyPathWithQueryAndFrag() {
 		Url url = new Url("http://host.com/?query=2#fragment");
 		assertUrlParts(url, "http", null, null, "host.com", -1, "", "query=2",
 				"fragment");
 	}
-	
+
 	public void shouldParseEmptyPathWithQueryAndEmptyFrag() {
 		Url url = new Url("http://host.com/?query=2#");
 		assertUrlParts(url, "http", null, null, "host.com", -1, "", "query=2",
 				"");
 	}
-	
+
 	public void shouldParseEmptyPathWithQuery2() {
 		Url url = new Url("http://host.com?query=2");
-		assertUrlParts(url, "http", null, null, "host.com", -1, null, "query=2",
-				null);
+		assertUrlParts(url, "http", null, null, "host.com", -1, null,
+				"query=2", null);
 	}
-	
+
 	public void shouldParseEmptyPathWithQuery2AndFrag() {
 		Url url = new Url("http://host.com?query=2#fragment");
-		assertUrlParts(url, "http", null, null, "host.com", -1, null, "query=2",
-				"fragment");
+		assertUrlParts(url, "http", null, null, "host.com", -1, null,
+				"query=2", "fragment");
 	}
-	
+
 	public void shouldParseEmptyPathWithQuery2AndEmptyFrag() {
 		Url url = new Url("http://host.com?query=2#");
-		assertUrlParts(url, "http", null, null, "host.com", -1, null, "query=2",
-				"");
+		assertUrlParts(url, "http", null, null, "host.com", -1, null,
+				"query=2", "");
 	}
-	
+
 	public void shouldParseEmptyPathWithQuery3() {
 		Url url = new Url("http://host.com?que/ry=2");
-		assertUrlParts(url, "http", null, null, "host.com", -1, null, "que/ry=2",
-				null);
+		assertUrlParts(url, "http", null, null, "host.com", -1, null,
+				"que/ry=2", null);
 	}
-	
+
 	public void shouldParseEmptyPathWithQuery3AndFrag() {
 		Url url = new Url("http://host.com?que/ry=2#fragment");
-		assertUrlParts(url, "http", null, null, "host.com", -1, null, "que/ry=2",
-				"fragment");
+		assertUrlParts(url, "http", null, null, "host.com", -1, null,
+				"que/ry=2", "fragment");
 	}
-	
+
 	public void shouldParseEmptyPathWithQuery4AndFrag() {
 		Url url = new Url("http://host.com?query=2#fr/agment");
-		assertUrlParts(url, "http", null, null, "host.com", -1, null, "query=2",
-				"fr/agment");
+		assertUrlParts(url, "http", null, null, "host.com", -1, null,
+				"query=2", "fr/agment");
 	}
-	
+
 	public void shouldParseEmptyPathWithQuery3AndEmptyFrag() {
 		Url url = new Url("http://host.com?que/ry=2#");
-		assertUrlParts(url, "http", null, null, "host.com", -1, null, "que/ry=2",
-				"");
+		assertUrlParts(url, "http", null, null, "host.com", -1, null,
+				"que/ry=2", "");
 	}
-	
+
 	public void shouldParseEmptyPathWithFrag() {
 		Url url = new Url("http://host.com/#fragment");
 		assertUrlParts(url, "http", null, null, "host.com", -1, "", null,
 				"fragment");
 	}
-	
+
 	public void shouldParseEmptyPathWithFrag2() {
 		Url url = new Url("http://host.com#fragment");
 		assertUrlParts(url, "http", null, null, "host.com", -1, null, null,
 				"fragment");
 	}
-	
+
 	public void shouldParseEmptyPathWithFrag3() {
 		Url url = new Url("http://host.com#frag/ment");
 		assertUrlParts(url, "http", null, null, "host.com", -1, null, null,
 				"frag/ment");
 	}
-	
+
 	public void shouldParseEmptyPathWithFrag4() {
 		Url url = new Url("http://host.com#frag?ment");
 		assertUrlParts(url, "http", null, null, "host.com", -1, null, null,
 				"frag?ment");
+	}
+
+	public void shouldConvertToURI() throws URISyntaxException {
+		String urlStr = "http://uri.com";
+		Url url = new Url(urlStr);
+		assertThat("URI convertion good", url.asURI(), equalTo(new URI(urlStr)));
+	}
+
+	public void shouldConvertToURL() throws MalformedURLException {
+		String urlStr = "http://uri.com";
+		Url url = new Url(urlStr);
+		assertThat("URI convertion good", url.asURL(), equalTo(new URL(urlStr)));
+	}
+	
+	public void shouldCreateFromURL() throws MalformedURLException {
+		String urlStr = "http://uri.com";
+		Url url=new Url(new URL(urlStr));
+		assertThat("From URL conversion good",url.getRaw(),equalTo(urlStr));
+	}
+	
+	public void shouldCreateFromURI() throws URISyntaxException {
+		String urlStr = "http://uri.com";
+		Url url=new Url(new URI(urlStr));
+		assertThat("From URL conversion good",url.getRaw(),equalTo(urlStr));
 	}
 }
