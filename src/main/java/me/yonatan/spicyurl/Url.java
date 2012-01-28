@@ -175,8 +175,13 @@ public class Url {
 				} else {
 					url.path = StringUtils.substring(pathQueryFregment, 0,
 							secondSeperatorIdx);
-					parseQueryFregmant(StringUtils.substring(pathQueryFregment,
-							secondSeperatorIdx));
+					if (pathQueryFregment.charAt(secondSeperatorIdx) == FRAGMENT_SEP_CHAR) {
+						url.fragment = StringUtils.substring(pathQueryFregment,
+								secondSeperatorIdx + 1);
+					} else {
+						parseQueryFregmant(StringUtils.substring(
+								pathQueryFregment, secondSeperatorIdx + 1));
+					}
 				}
 				break;
 			case QUERY_SEP_CHAR:
@@ -194,12 +199,12 @@ public class Url {
 			if (StringUtils.isEmpty(queryFragment))
 				return;
 
-				String[] parts = StringUtils.splitPreserveAllTokens(
-						queryFragment, FRAGMENT_SEP, 2);
-				url.query = parts[0];
-				if (parts.length == 2) {
-					url.fragment = parts[1];
-				}
+			String[] parts = StringUtils.splitPreserveAllTokens(queryFragment,
+					FRAGMENT_SEP, 2);
+			url.query = parts[0];
+			if (parts.length == 2) {
+				url.fragment = parts[1];
+			}
 		}
 
 	}
