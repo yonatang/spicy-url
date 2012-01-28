@@ -56,13 +56,13 @@ public class Url {
 
 	protected void setHost(String host) {
 		if (StringUtils.isEmpty(host))
-			throw new MalformedUrlException();
+			throw new MalformedUrlException(getRaw());
 		this.host = host;
 	}
 
 	protected void setScheme(String scheme) {
 		if (StringUtils.isEmpty(scheme))
-			throw new MalformedUrlException();
+			throw new MalformedUrlException(getRaw());
 		this.scheme = scheme;
 	}
 
@@ -72,7 +72,7 @@ public class Url {
 
 	protected void setPort(int port) {
 		if (port < Parser.MIN_PORT_VALUE || port > Parser.MAX_PORT_VALUE)
-			throw new MalformedUrlException();
+			throw new MalformedUrlException(getRaw());
 
 		this.port = port;
 	}
@@ -119,11 +119,11 @@ public class Url {
 					.splitByWholeSeparatorPreserveAllTokens(url.getRaw(),
 							SCHEME_SEP, 2);
 			if (stage0.length != 2)
-				throw new MalformedUrlException();
+				throw new MalformedUrlException(url.getRaw());
 
 			url.setScheme(stage0[0]);
 
-			// Check for first speprator, to split host from path/query/fragment
+			// Check for first separator, to split host from path/query/fragment
 			int hostSeperatorIdx = StringUtils.indexOfAny(stage0[1], PATH_SEP,
 					QUERY_SEP, FRAGMENT_SEP);
 			if (hostSeperatorIdx == -1) {
@@ -140,7 +140,7 @@ public class Url {
 
 		private void parseLoginHostPort(String loginHostPort) {
 			if (StringUtils.isEmpty(loginHostPort))
-				throw new MalformedUrlException();
+				throw new MalformedUrlException(url.getRaw());
 			if (loginHostPort.contains(LOGIN_SEP)) {
 				parseLogin(StringUtils.substringBeforeLast(loginHostPort,
 						LOGIN_SEP));
@@ -169,7 +169,7 @@ public class Url {
 			String[] stage0 = StringUtils.splitPreserveAllTokens(hostPort,
 					PORT_SEP);
 			if (stage0.length > 2)
-				throw new MalformedUrlException();
+				throw new MalformedUrlException(url.getRaw());
 			url.setHost(stage0[0]);
 			if (stage0.length == 2) {
 				parsePort(stage0[1]);
@@ -178,12 +178,12 @@ public class Url {
 
 		private void parsePort(String port) {
 			if (!StringUtils.isNumeric(port)) {
-				throw new MalformedUrlException();
+				throw new MalformedUrlException(url.getRaw());
 			}
 			try {
 				url.setPort(Integer.parseInt(port));
 			} catch (NumberFormatException e) {
-				throw new MalformedUrlException();
+				throw new MalformedUrlException(url.getRaw());
 			}
 		}
 
@@ -225,7 +225,7 @@ public class Url {
 				url.setFragment(pathQueryFregment);
 				break;
 			default:
-				throw new MalformedUrlException();
+				throw new MalformedUrlException(url.getRaw());
 			}
 		}
 
