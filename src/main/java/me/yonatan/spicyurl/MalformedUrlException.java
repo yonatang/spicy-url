@@ -18,6 +18,8 @@ package me.yonatan.spicyurl;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
+import me.yonatan.spicyurl.Url.Errors;
+
 public class MalformedUrlException extends RuntimeException {
 	private static final long serialVersionUID = 2341793276271284540L;
 
@@ -37,14 +39,13 @@ public class MalformedUrlException extends RuntimeException {
 	public MalformedUrlException(String url, Errors err, Throwable cause,
 			Object... msgArgs) {
 		super(MessageFormat.format(messages.getString("GENERAL_MESSAGE"), url,
-				MessageFormat.format(messages.getString(err.name()),
-						msgArgs)), cause);
+				MessageFormat.format(messages.getString(err.name()), msgArgs)),
+				cause);
 	}
 
 	public MalformedUrlException(String url, Errors err, Object... msgArgs) {
 		super(MessageFormat.format(messages.getString("GENERAL_MESSAGE"), url,
-				MessageFormat.format(messages.getString(err.name()),
-						msgArgs)));
+				MessageFormat.format(messages.getString(err.name()), msgArgs)));
 	}
 
 	public MalformedUrlException(String url, String errorMessage,
@@ -58,7 +59,4 @@ public class MalformedUrlException extends RuntimeException {
 				errorMessage));
 	}
 
-	static enum Errors {
-		UNKNOWN, INVALID_PORT_VALUE,HOST_IS_MISSING,SCHEME_IS_MISSING
-	}
 }

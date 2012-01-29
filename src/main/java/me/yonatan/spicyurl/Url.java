@@ -15,15 +15,15 @@
  ******************************************************************************/
 package me.yonatan.spicyurl;
 
-import static me.yonatan.spicyurl.MalformedUrlException.Errors.HOST_IS_MISSING;
-import static me.yonatan.spicyurl.MalformedUrlException.Errors.INVALID_PORT_VALUE;
-import static me.yonatan.spicyurl.MalformedUrlException.Errors.SCHEME_IS_MISSING;
-
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import org.apache.commons.lang3.CharUtils;
@@ -67,15 +67,29 @@ public class Url {
 	private String query;
 	private String fragment;
 
+	@Getter(AccessLevel.NONE)
+	private Set<Errors> _validationErrors = new HashSet<Errors>();
+
+	private Set<Errors> valiationErrors = Collections
+			.unmodifiableSet(_validationErrors);
+
+	public boolean isValid() {
+		return _validationErrors.isEmpty();
+	}
+
 	protected void setHost(String host) {
-		if (StringUtils.isEmpty(host))
-			throw new MalformedUrlException(getRaw(), HOST_IS_MISSING);
+		if (StringUtils.isEmpty(host)) {
+			_validationErrors.add(Errors.HOST_IS_MISSING);
+			return;
+		}
 		this.host = host;
 	}
 
 	protected void setScheme(String scheme) {
-		if (StringUtils.isEmpty(scheme))
-			throw new MalformedUrlException(getRaw(), SCHEME_IS_MISSING);
+		if (StringUtils.isEmpty(scheme)) {
+			_validationErrors.add(Errors.SCHEME_IS_MISSING);
+			return;
+		}
 		this.scheme = scheme;
 	}
 
@@ -84,8 +98,10 @@ public class Url {
 	}
 
 	protected void setPort(int port) {
-		if (port < Parser.MIN_PORT_VALUE || port > Parser.MAX_PORT_VALUE)
-			throw new MalformedUrlException(getRaw(), INVALID_PORT_VALUE, port);
+		if (port < Parser.MIN_PORT_VALUE || port > Parser.MAX_PORT_VALUE) {
+			_validationErrors.add(Errors.INVALID_PORT_VALUE);
+			return;
+		}
 
 		this.port = port;
 	}
@@ -131,10 +147,12 @@ public class Url {
 			String[] stage0 = StringUtils
 					.splitByWholeSeparatorPreserveAllTokens(url.getRaw(),
 							SCHEME_SEP, 2);
-			if (stage0.length != 2)
-				throw new MalformedUrlException(url.getRaw(), HOST_IS_MISSING);
 
 			url.setScheme(stage0[0]);
+			if (stage0.length != 2) {
+				_validationErrors.add(Errors.HOST_IS_MISSING);
+				return;
+			}
 
 			// Check for first separator, to split host from path/query/fragment
 			int hostSeperatorIdx = StringUtils.indexOfAny(stage0[1], PATH_SEP,
@@ -152,8 +170,10 @@ public class Url {
 		}
 
 		private void parseLoginHostPort(String loginHostPort) {
-			if (StringUtils.isEmpty(loginHostPort))
-				throw new MalformedUrlException(url.getRaw(), HOST_IS_MISSING);
+			if (StringUtils.isEmpty(loginHostPort)) {
+				_validationErrors.add(Errors.HOST_IS_MISSING);
+				return;
+			}
 			if (loginHostPort.contains(LOGIN_SEP)) {
 				parseLogin(StringUtils.substringBeforeLast(loginHostPort,
 						LOGIN_SEP));
@@ -178,9 +198,10 @@ public class Url {
 		private void parseHostPort(String hostPort) {
 			String[] stage0 = StringUtils.splitPreserveAllTokens(hostPort,
 					PORT_SEP);
-			if (stage0.length > 2)
-				throw new MalformedUrlException(url.getRaw(),
-						INVALID_PORT_VALUE, hostPort);
+			if (stage0.length > 2) {
+				_validationErrors.add(Errors.INVALID_PORT_VALUE);
+				return;
+			}
 			url.setHost(stage0[0]);
 			if (stage0.length == 2) {
 				parsePort(stage0[1]);
@@ -189,14 +210,14 @@ public class Url {
 
 		private void parsePort(String port) {
 			if (!StringUtils.isNumeric(port)) {
-				throw new MalformedUrlException(url.getRaw(),
-						INVALID_PORT_VALUE, port);
+				_validationErrors.add(Errors.INVALID_PORT_VALUE);
+				return;
 			}
 			try {
 				url.setPort(Integer.parseInt(port));
 			} catch (NumberFormatException e) {
-				throw new MalformedUrlException(url.getRaw(),
-						INVALID_PORT_VALUE, port);
+				_validationErrors.add(Errors.INVALID_PORT_VALUE);
+				return;
 			}
 		}
 
@@ -207,11 +228,7 @@ public class Url {
 		 *            or FRAGMENT '?')
 		 */
 		private void parsePathQueryFregment(String sepPathQueryFregment) {
-			if (StringUtils.isEmpty(sepPathQueryFregment))
-				return;
-
 			char firstSeperator = CharUtils.toChar(sepPathQueryFregment);
-			;
 			String pathQueryFregment = StringUtils.substring(
 					sepPathQueryFregment, 1);
 
@@ -239,8 +256,6 @@ public class Url {
 			case FRAGMENT_SEP_CHAR:
 				url.setFragment(pathQueryFregment);
 				break;
-			default:
-				throw new MalformedUrlException(url.getRaw());
 			}
 		}
 
@@ -254,6 +269,10 @@ public class Url {
 			}
 		}
 
+	}
+
+	public static enum Errors {
+		UNKNOWN, INVALID_PORT_VALUE, HOST_IS_MISSING, SCHEME_IS_MISSING
 	}
 
 }

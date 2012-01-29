@@ -9,7 +9,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
-import me.yonatan.spicyurl.MalformedUrlException.Errors;
+import me.yonatan.spicyurl.Url.Errors;
 
 import org.testng.annotations.Test;
 
@@ -94,8 +94,9 @@ public class MalformedUrlExceptionTest {
 	
 	public void shouldHaveResourcesForAllErrors(){
 		ResourceBundle rb=ResourceBundle.getBundle("me/yonatan/spicyurl/ErrorMessages");
-		for (Errors e:MalformedUrlException.Errors.values()){
+		for (Errors e:Errors.values()){
 			assertThat("ResourceBundle contains key",rb.getString(e.name()),notNullValue());
+			Errors.valueOf(e.name());
 		}
 	}
 
