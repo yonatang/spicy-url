@@ -260,10 +260,14 @@ public class Url {
 		}
 
 		private void parseQueryFregmant(String queryFragment) {
+			if (StringUtils.isEmpty(queryFragment)){
+				url.setQuery(queryFragment);
+				return;
+			}
+
 			String[] parts = StringUtils.splitPreserveAllTokens(queryFragment,
 					FRAGMENT_SEP, 2);
-			if (parts.length > 0)
-				url.setQuery(parts[0]);
+			url.setQuery(parts[0]);
 			if (parts.length == 2) {
 				url.setFragment(parts[1]);
 			}
