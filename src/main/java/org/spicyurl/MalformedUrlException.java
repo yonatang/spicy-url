@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package me.yonatan.spicyurl;
+package org.spicyurl;
 
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
-import me.yonatan.spicyurl.Url.Errors;
+import org.spicyurl.Url.Errors;
+
 
 public class MalformedUrlException extends RuntimeException {
 	private static final long serialVersionUID = 2341793276271284540L;
 
 	private static final ResourceBundle messages = ResourceBundle
-			.getBundle("me/yonatan/spicyurl/ErrorMessages");
+			.getBundle("org/spicyurl/ErrorMessages");
 
 	public MalformedUrlException(String url, Throwable cause) {
 		super(MessageFormat.format(messages.getString("GENERAL_MESSAGE"), url,

@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package me.yonatan.spicyurl;
+package org.spicyurl;
 
-import static me.yonatan.spicyurl.Url.Errors.HOST_IS_MISSING;
-import static me.yonatan.spicyurl.Url.Errors.INVALID_PORT_VALUE;
-import static me.yonatan.spicyurl.Url.Errors.SCHEME_IS_MISSING;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.spicyurl.Url.Errors.HOST_IS_MISSING;
+import static org.spicyurl.Url.Errors.INVALID_PORT_VALUE;
+import static org.spicyurl.Url.Errors.SCHEME_IS_MISSING;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import me.yonatan.spicyurl.Url.Errors;
 
+import org.spicyurl.Url;
+import org.spicyurl.Url.Errors;
 import org.testng.annotations.Test;
 
 @Test

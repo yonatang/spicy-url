@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<name>Spicy URL</name>
 
-	<groupId>me.yonatan.spicyurl</groupId>
+	<groupId>org.spicyurl</groupId>
 	<artifactId>spicyurl</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
 	<properties>
