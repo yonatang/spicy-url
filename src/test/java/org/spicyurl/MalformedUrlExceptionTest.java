@@ -9,7 +9,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
-import org.spicyurl.Url.Errors;
 import org.testng.annotations.Test;
 
 @Test
@@ -37,7 +36,7 @@ public class MalformedUrlExceptionTest {
 
 	public void shouldGenerateFromErrWithNoParam() {
 		MalformedUrlException m = new MalformedUrlException("http://url.com",
-				Errors.HOST_IS_MISSING);
+				UrlErrors.HOST_IS_MISSING);
 		assertThat(
 				"Message is correct",
 				m.getMessage(),
@@ -48,7 +47,7 @@ public class MalformedUrlExceptionTest {
 	public void shouldGenerateFromErrWithCauseAndNoParam() {
 		NullPointerException npe = new NullPointerException("NPE");
 		MalformedUrlException m = new MalformedUrlException("http://url.com",
-				Errors.HOST_IS_MISSING, npe);
+				UrlErrors.HOST_IS_MISSING, npe);
 		assertThat(
 				"Message is correct",
 				m.getMessage(),
@@ -60,7 +59,7 @@ public class MalformedUrlExceptionTest {
 	public void shouldGenerateFromErrWithParam() {
 		NullPointerException npe = new NullPointerException("NPE");
 		MalformedUrlException m = new MalformedUrlException("http://url.com",
-				Errors.INVALID_PORT_VALUE, npe,65536);
+				UrlErrors.INVALID_PORT_VALUE, npe,65536);
 		assertThat(
 				"Message is correct",
 				m.getMessage(),
@@ -93,9 +92,9 @@ public class MalformedUrlExceptionTest {
 	
 	public void shouldHaveResourcesForAllErrors(){
 		ResourceBundle rb=ResourceBundle.getBundle("org/spicyurl/ErrorMessages");
-		for (Errors e:Errors.values()){
+		for (UrlErrors e:UrlErrors.values()){
 			assertThat("ResourceBundle contains key",rb.getString(e.name()),notNullValue());
-			Errors.valueOf(e.name());
+			UrlErrors.valueOf(e.name());
 		}
 	}
 

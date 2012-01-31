@@ -67,9 +67,9 @@ public class Url {
 	private String fragment;
 
 	@Getter(AccessLevel.PROTECTED) 
-	private Set<Errors> validationErrorsModifiable = new HashSet<Errors>();
+	private Set<UrlErrors> validationErrorsModifiable = new HashSet<UrlErrors>();
 
-	private Set<Errors> valiationErrors = Collections
+	private Set<UrlErrors> valiationErrors = Collections
 			.unmodifiableSet(validationErrorsModifiable);
 
 	public boolean isValid() {
@@ -78,7 +78,7 @@ public class Url {
 
 	protected void setHost(String host) {
 		if (StringUtils.isEmpty(host)) {
-			validationErrorsModifiable.add(Errors.HOST_IS_MISSING);
+			validationErrorsModifiable.add(UrlErrors.HOST_IS_MISSING);
 			return;
 		}
 		this.host = host;
@@ -86,7 +86,7 @@ public class Url {
 
 	protected void setScheme(String scheme) {
 		if (StringUtils.isEmpty(scheme)) {
-			validationErrorsModifiable.add(Errors.SCHEME_IS_MISSING);
+			validationErrorsModifiable.add(UrlErrors.SCHEME_IS_MISSING);
 			return;
 		}
 		this.scheme = scheme;
@@ -98,7 +98,7 @@ public class Url {
 
 	protected void setPort(int port) {
 		if (port < UrlParser.MIN_PORT_VALUE || port > UrlParser.MAX_PORT_VALUE) {
-			validationErrorsModifiable.add(Errors.INVALID_PORT_VALUE);
+			validationErrorsModifiable.add(UrlErrors.INVALID_PORT_VALUE);
 			return;
 		}
 
@@ -119,10 +119,6 @@ public class Url {
 
 	protected void setFragment(String fragment) {
 		this.fragment = fragment;
-	}
-
-	public static enum Errors {
-		UNKNOWN, INVALID_PORT_VALUE, HOST_IS_MISSING, SCHEME_IS_MISSING
 	}
 
 }

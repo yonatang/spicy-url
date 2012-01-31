@@ -18,18 +18,15 @@ package org.spicyurl;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.spicyurl.Url.Errors.HOST_IS_MISSING;
-import static org.spicyurl.Url.Errors.INVALID_PORT_VALUE;
-import static org.spicyurl.Url.Errors.SCHEME_IS_MISSING;
+import static org.spicyurl.UrlErrors.HOST_IS_MISSING;
+import static org.spicyurl.UrlErrors.INVALID_PORT_VALUE;
+import static org.spicyurl.UrlErrors.SCHEME_IS_MISSING;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-
-import org.spicyurl.Url;
-import org.spicyurl.Url.Errors;
 import org.testng.annotations.Test;
 
 @Test
@@ -49,7 +46,7 @@ public class UrlTest {
 		assertThat("Url is valid", url.isValid());
 	}
 
-	private void assertInvalidUrl(Url url, Errors... errors) {
+	private void assertInvalidUrl(Url url, UrlErrors... errors) {
 		assertThat("Url is invalid", url.isValid(),equalTo(false));
 		assertThat("Url has the right validation error",
 				url.getValiationErrors(), hasItems(errors));

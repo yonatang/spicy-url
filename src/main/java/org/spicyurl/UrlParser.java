@@ -17,7 +17,6 @@ package org.spicyurl;
 
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.spicyurl.Url.Errors;
 
 class UrlParser {
 	/**
@@ -49,7 +48,7 @@ class UrlParser {
 
 		url.setScheme(stage0[0]);
 		if (stage0.length != 2) {
-			url.getValidationErrorsModifiable().add(Errors.HOST_IS_MISSING);
+			url.getValidationErrorsModifiable().add(UrlErrors.HOST_IS_MISSING);
 			return;
 		}
 
@@ -70,7 +69,7 @@ class UrlParser {
 
 	private void parseLoginHostPort(String loginHostPort) {
 		if (StringUtils.isEmpty(loginHostPort)) {
-			url.getValidationErrorsModifiable().add(Errors.HOST_IS_MISSING);
+			url.getValidationErrorsModifiable().add(UrlErrors.HOST_IS_MISSING);
 			return;
 		}
 		if (loginHostPort.contains(LOGIN_SEP)) {
@@ -96,7 +95,7 @@ class UrlParser {
 		String[] stage0 = StringUtils
 				.splitPreserveAllTokens(hostPort, PORT_SEP);
 		if (stage0.length > 2) {
-			url.getValidationErrorsModifiable().add(Errors.INVALID_PORT_VALUE);
+			url.getValidationErrorsModifiable().add(UrlErrors.INVALID_PORT_VALUE);
 			return;
 		}
 		url.setHost(stage0[0]);
@@ -107,13 +106,13 @@ class UrlParser {
 
 	private void parsePort(String port) {
 		if (!StringUtils.isNumeric(port)) {
-			url.getValidationErrorsModifiable().add(Errors.INVALID_PORT_VALUE);
+			url.getValidationErrorsModifiable().add(UrlErrors.INVALID_PORT_VALUE);
 			return;
 		}
 		try {
 			url.setPort(Integer.parseInt(port));
 		} catch (NumberFormatException e) {
-			url.getValidationErrorsModifiable().add(Errors.INVALID_PORT_VALUE);
+			url.getValidationErrorsModifiable().add(UrlErrors.INVALID_PORT_VALUE);
 			return;
 		}
 	}

@@ -18,7 +18,6 @@ package org.spicyurl;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
-import org.spicyurl.Url.Errors;
 
 
 public class MalformedUrlException extends RuntimeException {
@@ -29,22 +28,22 @@ public class MalformedUrlException extends RuntimeException {
 
 	public MalformedUrlException(String url, Throwable cause) {
 		super(MessageFormat.format(messages.getString("GENERAL_MESSAGE"), url,
-				messages.getString(Errors.UNKNOWN.name())), cause);
+				messages.getString(UrlErrors.UNKNOWN.name())), cause);
 	}
 
 	public MalformedUrlException(String url) {
 		super(MessageFormat.format(messages.getString("GENERAL_MESSAGE"), url,
-				messages.getString(Errors.UNKNOWN.name())));
+				messages.getString(UrlErrors.UNKNOWN.name())));
 	}
 
-	public MalformedUrlException(String url, Errors err, Throwable cause,
+	public MalformedUrlException(String url, UrlErrors err, Throwable cause,
 			Object... msgArgs) {
 		super(MessageFormat.format(messages.getString("GENERAL_MESSAGE"), url,
 				MessageFormat.format(messages.getString(err.name()), msgArgs)),
 				cause);
 	}
 
-	public MalformedUrlException(String url, Errors err, Object... msgArgs) {
+	public MalformedUrlException(String url, UrlErrors err, Object... msgArgs) {
 		super(MessageFormat.format(messages.getString("GENERAL_MESSAGE"), url,
 				MessageFormat.format(messages.getString(err.name()), msgArgs)));
 	}
