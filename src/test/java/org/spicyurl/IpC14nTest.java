@@ -2,8 +2,14 @@ package org.spicyurl;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.io.IOException;
+import java.util.Map.Entry;
+import java.util.Properties;
+
 import lombok.AllArgsConstructor;
 
+import org.apache.commons.lang3.StringUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -15,7 +21,7 @@ public class IpC14nTest {
 		@AllArgsConstructor
 		class TestObj {
 			String octat;
-			int ip;
+			long ip;
 		}
 		//@formatter:off
 		TestObj[] tests = new TestObj[] { 
@@ -59,25 +65,54 @@ public class IpC14nTest {
 		}
 	}
 
-	public void shouldParseIpV4Properly() {
+	public void shouldParseIpV4Properly() throws IOException {
 		IpC14n c14n = new IpC14n();
-		@AllArgsConstructor
-		class TestObj {
-			String in;
-			byte[] exp;
-		}
-		//@formatter:off
-		TestObj[] tests=new TestObj[]{
-			new TestObj("10.138",new byte[]{10,0,0,(byte)138}),
-			new TestObj("10.0.138",new byte[]{10,0,0,(byte)138}),
-			new TestObj("10.256",new byte[]{10,0,1,0}),
-			new TestObj("10.0.256",new byte[]{10,0,1,0}),
-			
-		};
-		//@formatter:on
 
-		for (TestObj test : tests) {
-			assertThat("Parse ip " + test.in, c14n.c14nIpV4(test.in), is(test.exp));
+		Properties p = new Properties();
+		p.load(this.getClass().getResourceAsStream("ip.c14n.cannonicalization.properties"));
+
+		for (Entry<Object, Object> entry : p.entrySet()) {
+			String in = entry.getKey().toString();
+			String exp = entry.getValue().toString();
+			byte[] octats = null;
+			if (StringUtils.isNotBlank(exp)) {
+				octats = new byte[4];
+				int i = 0;
+				for (String octat : StringUtils.split(exp, '.')) {
+					octats[i++] = (byte) Integer.parseInt(octat);
+				}
+			}
+			try {
+				assertThat("Assert correct answer for " + in, c14n.c14nIpV4(in), is(octats));
+			} catch (MalformedIpException e) {
+				if (octats != null) {
+					Assert.fail("Should get for " + in + " - " + exp + ", but got " + e);
+				}
+			}
 		}
+		// @AllArgsConstructor
+		// class TestObj {
+		// String in;
+		// byte[] exp;
+		// }
+//		//@formatter:off
+//		TestObj[] tests=new TestObj[]{
+//			new TestObj("10.138",new byte[]{10,0,0,(byte)138}),
+//			new TestObj("10.0.138",new byte[]{10,0,0,(byte)138}),
+//			new TestObj("10.256",new byte[]{10,0,1,0}),
+//			new TestObj("10.0.256",new byte[]{10,0,1,0}),
+//			
+//		};
+//		//@formatter:on
+		//
+		// for (TestObj test : tests) {
+		// assertThat("Parse ip " + test.in, c14n.c14nIpV4(test.in),
+		// is(test.exp));
+		// }
+	}
+
+	public void t() {
+		IpC14n c = new IpC14n();
+		c.c14nIpV4("3279880203");
 	}
 }
