@@ -66,11 +66,10 @@ public class Url {
 	private String query;
 	private String fragment;
 
-	@Getter(AccessLevel.PROTECTED) 
+	@Getter(AccessLevel.PROTECTED)
 	private Set<UrlErrors> validationErrorsModifiable = new HashSet<UrlErrors>();
 
-	private Set<UrlErrors> valiationErrors = Collections
-			.unmodifiableSet(validationErrorsModifiable);
+	private Set<UrlErrors> valiationErrors = Collections.unmodifiableSet(validationErrorsModifiable);
 
 	public boolean isValid() {
 		return validationErrorsModifiable.isEmpty();

@@ -43,8 +43,7 @@ class UrlParser {
 	}
 
 	protected void parse() {
-		String[] stage0 = StringUtils.splitByWholeSeparatorPreserveAllTokens(
-				url.getRaw(), SCHEME_SEP, 2);
+		String[] stage0 = StringUtils.splitByWholeSeparatorPreserveAllTokens(url.getRaw(), SCHEME_SEP, 2);
 
 		url.setScheme(stage0[0]);
 		if (stage0.length != 2) {
@@ -53,16 +52,13 @@ class UrlParser {
 		}
 
 		// Check for first separator, to split host from path/query/fragment
-		int hostSeperatorIdx = StringUtils.indexOfAny(stage0[1], PATH_SEP,
-				QUERY_SEP, FRAGMENT_SEP);
+		int hostSeperatorIdx = StringUtils.indexOfAny(stage0[1], PATH_SEP, QUERY_SEP, FRAGMENT_SEP);
 		if (hostSeperatorIdx == -1) {
 			// Just host
 			parseLoginHostPort(stage0[1]);
 		} else {
-			parseLoginHostPort(StringUtils.substring(stage0[1], 0,
-					hostSeperatorIdx));
-			parsePathQueryFregment(StringUtils.substring(stage0[1],
-					hostSeperatorIdx));
+			parseLoginHostPort(StringUtils.substring(stage0[1], 0, hostSeperatorIdx));
+			parsePathQueryFregment(StringUtils.substring(stage0[1], hostSeperatorIdx));
 		}
 
 	}
@@ -73,10 +69,8 @@ class UrlParser {
 			return;
 		}
 		if (loginHostPort.contains(LOGIN_SEP)) {
-			parseLogin(StringUtils
-					.substringBeforeLast(loginHostPort, LOGIN_SEP));
-			parseHostPort(StringUtils.substringAfterLast(loginHostPort,
-					LOGIN_SEP));
+			parseLogin(StringUtils.substringBeforeLast(loginHostPort, LOGIN_SEP));
+			parseHostPort(StringUtils.substringAfterLast(loginHostPort, LOGIN_SEP));
 		} else {
 			parseHostPort(loginHostPort);
 		}
@@ -92,8 +86,7 @@ class UrlParser {
 	}
 
 	private void parseHostPort(String hostPort) {
-		String[] stage0 = StringUtils
-				.splitPreserveAllTokens(hostPort, PORT_SEP);
+		String[] stage0 = StringUtils.splitPreserveAllTokens(hostPort, PORT_SEP);
 		if (stage0.length > 2) {
 			url.getValidationErrorsModifiable().add(UrlErrors.INVALID_PORT_VALUE);
 			return;
@@ -125,24 +118,19 @@ class UrlParser {
 	 */
 	private void parsePathQueryFregment(String sepPathQueryFregment) {
 		char firstSeperator = CharUtils.toChar(sepPathQueryFregment);
-		String pathQueryFregment = StringUtils.substring(sepPathQueryFregment,
-				1);
+		String pathQueryFregment = StringUtils.substring(sepPathQueryFregment, 1);
 
 		switch (firstSeperator) {
 		case PATH_SEP_CHAR:
-			int secondSeperatorIdx = StringUtils.indexOfAny(pathQueryFregment,
-					QUERY_SEP, FRAGMENT_SEP);
+			int secondSeperatorIdx = StringUtils.indexOfAny(pathQueryFregment, QUERY_SEP, FRAGMENT_SEP);
 			if (secondSeperatorIdx == -1) {
 				url.setPath(pathQueryFregment);
 			} else {
-				url.setPath(StringUtils.substring(pathQueryFregment, 0,
-						secondSeperatorIdx));
+				url.setPath(StringUtils.substring(pathQueryFregment, 0, secondSeperatorIdx));
 				if (pathQueryFregment.charAt(secondSeperatorIdx) == FRAGMENT_SEP_CHAR) {
-					url.setFragment(StringUtils.substring(pathQueryFregment,
-							secondSeperatorIdx + 1));
+					url.setFragment(StringUtils.substring(pathQueryFregment, secondSeperatorIdx + 1));
 				} else {
-					parseQueryFregmant(StringUtils.substring(pathQueryFregment,
-							secondSeperatorIdx + 1));
+					parseQueryFregmant(StringUtils.substring(pathQueryFregment, secondSeperatorIdx + 1));
 				}
 			}
 			break;
@@ -161,8 +149,7 @@ class UrlParser {
 			return;
 		}
 
-		String[] parts = StringUtils.splitPreserveAllTokens(queryFragment,
-				FRAGMENT_SEP, 2);
+		String[] parts = StringUtils.splitPreserveAllTokens(queryFragment, FRAGMENT_SEP, 2);
 		url.setQuery(parts[0]);
 		if (parts.length == 2) {
 			url.setFragment(parts[1]);

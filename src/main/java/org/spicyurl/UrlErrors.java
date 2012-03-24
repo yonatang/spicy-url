@@ -17,7 +17,7 @@ public enum UrlErrors {
 	 * Scheme is missing
 	 */
 	SCHEME_IS_MISSING,
-	
+
 	/**
 	 * Host is invalid
 	 */
