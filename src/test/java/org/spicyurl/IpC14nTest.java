@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
 @Test
 public class IpC14nTest {
 
-	public void shouldParseIpV4Properly() {
+	public void shouldParseIpV4OctatProperly() {
 		IpC14n c14n = new IpC14n();
 		@AllArgsConstructor
 		class TestObj {
@@ -36,7 +36,7 @@ public class IpC14nTest {
 		}
 	}
 
-	public void shouldFailOnIpV4Gracefully() {
+	public void shouldFailOnIpV4OctatGracefully() {
 		IpC14n c14n = new IpC14n();
 
 		//@formatter:off
@@ -56,6 +56,28 @@ public class IpC14nTest {
 			} catch (IllegalArgumentException e) {
 
 			}
+		}
+	}
+
+	public void shouldParseIpV4Properly() {
+		IpC14n c14n = new IpC14n();
+		@AllArgsConstructor
+		class TestObj {
+			String in;
+			byte[] exp;
+		}
+		//@formatter:off
+		TestObj[] tests=new TestObj[]{
+			new TestObj("10.138",new byte[]{10,0,0,(byte)138}),
+			new TestObj("10.0.138",new byte[]{10,0,0,(byte)138}),
+			new TestObj("10.256",new byte[]{10,0,1,0}),
+			new TestObj("10.0.256",new byte[]{10,0,1,0}),
+			
+		};
+		//@formatter:on
+
+		for (TestObj test : tests) {
+			assertThat("Parse ip " + test.in, c14n.c14nIpV4(test.in), is(test.exp));
 		}
 	}
 }
